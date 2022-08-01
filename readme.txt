@@ -40,6 +40,7 @@ Preparing the ZIP file:
 1. Download this repository from github
 2. Open the archive and change the name of the folder from "FCFPay-PrestaShop-plugin-main" to "fcfpay"
 3. Save the archive 
+4. Rename the archive to "fcfpay.zip"
 
 Installing in PrestaShop
 1. Go to `Modules` in the Admin dashboard
