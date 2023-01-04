@@ -75,18 +75,45 @@ class FcfPayValidationModuleFrontController extends ModuleFrontController
                 $callback = $this->context->shop->getBaseURL() . 'modules/fcfpay/callback.php';
                 $redirect_url = $this->context->shop->getBaseURL().'index.php?controller=order-confirmation&id_cart='.(int)$cart->id.'&id_module='.(int)$fcfpay->id.'&id_order='.$fcfpay->currentOrder.'&key='.$customer->secure_key;
 
-                $data = array(
-                    'domain' => $domain,
-                    'order_id' => $order_reference,
-                    'user_id' => $customer->id,
-                    'amount' => $total,
-                    'currency_name' => $currency_code,
-                    'currency_code' => $currency_code_numeric,
-                    'order_date' => $update_date,
-                    'redirect_url' => $redirect_url,
-                );
+                // check if FCFPAY_SEND_ITEM_DETAILS is enabled 
+                if(Configuration::get('FCFPAY_SEND_ITEM_DETAILS') == 1) {
+                    $products = $cart->getProducts();
+                    $items = array();
+                    $itemIndex = 1;
+                    foreach ($products as $product) {
+                        $items[$itemIndex] = array(
+                            'Item Name' => $product['name'],
+                            'Quantity' => $product['quantity'],
+                            'Price' => $product['price_wt'],
+                            'Total' => $product['price_wt'] * $product['quantity'],
+                        );
+                        $itemIndex++;
+                    }
 
-                $request = json_encode($data, true);
+                    $data = array(
+                        'domain' => $domain,
+                        'order_id' => $order_reference,
+                        'user_id' => $customer->id,
+                        'amount' => $total,
+                        'currency_name' => $currency_code,
+                        'order_date' => $update_date,
+                        'redirect_url' => $redirect_url,
+                        'items' => $items,
+                    );                 
+                } else {
+                    $data = array(
+                        'domain' => $domain,
+                        'order_id' => $order_reference,
+                        'user_id' => $customer->id,
+                        'amount' => $total,
+                        'currency_name' => $currency_code,
+                        'currency_code' => $currency_code_numeric,
+                        'order_date' => $update_date,
+                        'redirect_url' => $redirect_url,
+                    );
+                }
+
+               $request = json_encode($data, true);
                $response = $fcfpay->sendApiRequest($request);
                 if (isset($response['success']) && $response['success']) {
                     $this->updateFcfOrder($id_order,$order_reference);

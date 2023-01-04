@@ -58,3 +58,5 @@ Installing in PrestaShop
 * Birthday of FCF Pay
 = 1.0.1: August 1, 2022 = 
 * PrestaShop Plugin release
+= 1.0.2: January 4, 2022 = 
+* Update to add order items sending to checkout page

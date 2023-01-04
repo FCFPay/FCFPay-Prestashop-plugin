@@ -258,7 +258,27 @@ class FcfPay extends PaymentModule
                         'query' => $order_states,
                         'id' => 'id_order_state',
                         'name' => 'name',
-                    )
+                    ),
+                ),
+                #add a Yes/No option that will allow the merchant to choose whether to send the item details to FCF Pay or not
+                array(
+                    'type' => 'switch',
+                    'label' => $this->l('Send item details to FCF Pay'),
+                    'name' => 'FCFPAY_SEND_ITEM_DETAILS',
+                    'is_bool' => true,
+                    'desc' => $this->l('Enabling this switch will send order item details to FCF Pay Checkout page'),
+                    'values' => array(
+                        array(
+                            'id' => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Yes')
+                        ),
+                        array(
+                            'id' => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('No')
+                        ),
+                    ),
                 ),
             ),
             'submit' => array(
@@ -319,6 +339,8 @@ class FcfPay extends PaymentModule
                 Configuration::get('FCFPAY_SUCCESS_STATUS') : '',
             'FCFPAY_FAILED_STATUS' => Configuration::get('FCFPAY_FAILED_STATUS') ?
                 Configuration::get('FCFPAY_FAILED_STATUS') : '',
+            'FCFPAY_SEND_ITEM_DETAILS' => Configuration::get('FCFPAY_SEND_ITEM_DETAILS') ?
+                Configuration::get('FCFPAY_SEND_ITEM_DETAILS') : '',
 
         );
     }
@@ -496,7 +518,7 @@ class FcfPay extends PaymentModule
         } else {
             $endpoint = 'https://sandbox.fcfpay.com/api/v2/'.$endpoint;
         }
-
+        
         $curl = curl_init($endpoint);
 
         curl_setopt($curl, CURLOPT_POST, true);
